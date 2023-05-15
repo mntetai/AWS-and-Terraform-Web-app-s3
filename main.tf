@@ -52,7 +52,10 @@ EOF
 resource "aws_s3_bucket" "web_bucket" {
   bucket        = var.bucket_name
   force_destroy = true
+}
 
+resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
+  bucket = aws_s3_bucket.web_bucket.id
   policy = <<POLICY
 {
   "Version": "2012-10-17",
@@ -91,6 +94,7 @@ resource "aws_s3_bucket" "web_bucket" {
     POLICY
 
 }
+
 
 resource "aws_s3_bucket_acl" "example" {
   bucket = aws_s3_bucket.web_bucket.id
