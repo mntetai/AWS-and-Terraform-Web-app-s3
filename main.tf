@@ -54,7 +54,7 @@ resource "aws_s3_bucket" "web_bucket" {
   force_destroy = true
 }
 
-resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
+resource "aws_s3_bucket_policy" "bucket_owner_full_access" {
   bucket = aws_s3_bucket.web_bucket.id
   policy = <<POLICY
 {
@@ -94,8 +94,20 @@ resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
 POLICY
 }
 
+resource "aws_s3_bucket_ownership_controls" "web_bucket" {
+  bucket = aws_s3_bucket.web_bucket.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
 
-resource "aws_s3_bucket_acl" "example" {
+resource "aws_s3_bucket_acl" "web_bucket" {
+  depends_on = [aws_s3_bucket_ownership_controls.web_bucket]
+
   bucket = aws_s3_bucket.web_bucket.id
   acl    = "private"
 }
+#resource "aws_s3_bucket_acl" "example" {
+#  bucket = aws_s3_bucket.web_bucket.id
+#  acl    = "private"
+#}
